@@ -10,12 +10,15 @@
 '
 'Here's the code to add, including stats gathering pieces (without comments of course):
 '
-'GATHERING STATS----------------------------------------------------------------------------------------------------
-'name_of_script = ""
-'start_time = timer
-'
-'LOADING ROUTINE FUNCTIONS (FOR PRISM)---------------------------------------------------------------
-'url = "https://raw.githubusercontent.com/theVKC/Anoka-PRISM-Scripts/master/Shared%20Functions%20Library/PRISM%20Functions%20Library.vbs"
+''LOADING ROUTINE FUNCTIONS (FOR PRISM)---------------------------------------------------------------
+'Dim URL, REQ, FSO					'Declares variables to be good to option explicit users
+'If beta_agency = "" then 			'For scriptwriters only
+'	url = "https://raw.githubusercontent.com/MN-CS-Script-Team/PRISM-Scripts/master/Shared%20Functions%20Library/PRISM%20Functions%20Library.vbs"
+'ElseIf beta_agency = True then		'For beta agencies and testers
+'	url = "https://raw.githubusercontent.com/MN-CS-Script-Team/PRISM-Scripts/beta/Shared%20Functions%20Library/PRISM%20Functions%20Library.vbs"
+'Else								'For most users
+'	url = "https://raw.githubusercontent.com/MN-CS-Script-Team/PRISM-Scripts/release/Shared%20Functions%20Library/PRISM%20Functions%20Library.vbs"
+'End if
 'Set req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a URL
 'req.open "GET", url, False									'Attempts to open the URL
 'req.send													'Sends request
@@ -39,41 +42,17 @@
 '			"URL: " & url
 '			StopScript
 'END IF
-'----------------------------------------------------------------------------------------------------
 
-'FUNCTIONS THAT ARE BEING USED:
-'          attn
-'          back_to_SELF
-'          end_excel_and_script
-'          find_variable
-'		fix_case
-'          navigate_to_MAXIS_screen
-'          navigate_to_PRISM_screen
-'          PF1
-'          PF2
-'          PF3
-'          PF4
-'          PF5
-'          PF6
-'          PF7
-'          PF8
-'          PF9
-'          PF10
-'          PF11
-'          PF12
-'          PF20
-'		PRISM_case_number_finder
-'		PRISM_case_number_validation
-'          run_another_script
-'          script_end_procedure
-'          script_end_procedure_wsh
-'          step_through_handling
-'          transmit
-'		write_editbox_in_PRISM_case_note
-'		write_new_line_in_PRISM_case_note
-'-------------------------------------------------------------------------------------------------------
+'GLOBAL CONSTANTS----------------------------------------------------------------------------------------------------
+'Declares variables (thinking of option explicit in the future)
+Dim checked, unchecked, cancel, OK
 
+checked = 1			'Value for checked boxes
+unchecked = 0		'Value for unchecked boxes
+cancel = 0			'Value for cancel button in dialogs
+OK = -1				'Value for OK button in dialogs
 
+'SHARED FUNCTIONS----------------------------------------------------------------------------------------------------
 
 Function attn
   EMSendKey "<attn>"
@@ -87,6 +66,43 @@ function back_to_SELF
     EMReadScreen SELF_check, 4, 2, 50
   Loop until SELF_check = "SELF"
 End function
+
+Function check_for_PRISM(end_script)
+	EMReadScreen PRISM_check, 5, 1, 36
+	IF end_script = True THEN 
+		If PRISM_check <> "PRISM" then script_end_procedure("You do not appear to be in PRISM. You may be passworded out. Please check your PRISM screen and try again.")
+	ELSE
+		If PRISM_check <> "PRISM" then MsgBox "You do not appear to be in PRISM. You may be passworded out."
+	END IF
+END FUNCTION
+
+Function convert_array_to_droplist_items(array_to_convert, output_droplist_box)
+	For each item in array_to_convert
+		If output_droplist_box = "" then 
+			output_droplist_box = item
+		Else
+			output_droplist_box = output_droplist_box & chr(9) & item
+		End if
+	Next
+End Function
+
+FUNCTION create_mainframe_friendly_date(date_variable, screen_row, screen_col, year_type) 
+	var_month = datepart("m", date_variable)
+	IF len(var_month) = 1 THEN var_month = "0" & var_month
+	EMWriteScreen var_month & "/", screen_row, screen_col
+	var_day = datepart("d", date_variable)
+	IF len(var_day) = 1 THEN var_day = "0" & var_day
+	EMWriteScreen var_day & "/", screen_row, screen_col + 3
+	If year_type = "YY" then
+		var_year = right(datepart("yyyy", date_variable), 2)
+	ElseIf year_type = "YYYY" then
+		var_year = datepart("yyyy", date_variable)
+	Else
+		MsgBox "Year type entered incorrectly. Fourth parameter of function create_mainframe_friendly_date should read ""YYYY"" or ""YY"". The script will now stop."
+		StopScript
+	END IF
+	EMWriteScreen var_year, screen_row, screen_col + 6
+END FUNCTION
 
 Function end_excel_and_script
   objExcel.Workbooks.Close
@@ -240,10 +256,65 @@ Function PF12
   EMWaitReady 0, 0
 End function
 
+Function PF13
+  EMSendKey "<PF13>"
+  EMWaitReady 0, 0
+End function
+
+Function PF14
+  EMSendKey "<PF14>"
+  EMWaitReady 0, 0
+End function
+
+Function PF15
+  EMSendKey "<PF15>"
+  EMWaitReady 0, 0
+End function
+
+Function PF16
+  EMSendKey "<PF16>"
+  EMWaitReady 0, 0
+End function
+
+Function PF17
+  EMSendKey "<PF17>"
+  EMWaitReady 0, 0
+End function
+
+Function PF18
+  EMSendKey "<PF18>"
+  EMWaitReady 0, 0
+End function
+
+Function PF19
+  EMSendKey "<PF19>"
+  EMWaitReady 0, 0
+End function
+
 function PF20
   EMSendKey "<PF20>"
   EMWaitReady 0, 0
 end function
+
+Function PF21
+  EMSendKey "<PF21>"
+  EMWaitReady 0, 0
+End function
+
+Function PF22
+  EMSendKey "<PF22>"
+  EMWaitReady 0, 0
+End function
+
+Function PF23
+  EMSendKey "<PF23>"
+  EMWaitReady 0, 0
+End function
+
+Function PF24
+  EMSendKey "<PF24>"
+  EMWaitReady 0, 0
+End function
 
 Function PRISM_case_number_finder(variable_for_PRISM_case_number)
 	'Searches for the case number.
@@ -279,70 +350,86 @@ Function PRISM_case_number_validation(case_number_to_validate, outcome)
   End if
 End function
 
-function PRISM_check_function
-	EMReadScreen PRISM_check, 5, 1, 36
-	If PRISM_check <> "PRISM" then script_end_procedure("You do not appear to be in PRISM. You may be passworded out. Please check your PRISM screen and try again.")
-END function
-
-function run_another_script(script_path)
-  Set run_another_script_fso = CreateObject("Scripting.FileSystemObject")
-  Set fso_command = run_another_script_fso.OpenTextFile(script_path)
-  text_from_the_other_script = fso_command.ReadAll
-  fso_command.Close
-  Execute text_from_the_other_script
-end function
+'Runs a script from GitHub.
+FUNCTION run_from_GitHub(url)
+	Set req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a URL
+	req.open "GET", url, False									'Attempts to open the URL
+	req.send													'Sends request
+	If req.Status = 200 Then									'200 means great success
+		Set fso = CreateObject("Scripting.FileSystemObject")	'Creates an FSO
+		Execute req.responseText								'Executes the script code
+	ELSE														'Error message, tells user to try to reach github.com, otherwise instructs to contact Veronica with details (and stops script).
+		MsgBox 	"Something has gone wrong. The code stored on GitHub was not able to be reached." & vbCr &_ 
+				vbCr & _
+				"Before contacting Veronica Cary, please check to make sure you can load the main page at www.GitHub.com." & vbCr &_
+				vbCr & _
+				"If you can reach GitHub.com, but this script still does not work, ask an alpha user to contact Veronica Cary and provide the following information:" & vbCr &_
+				vbTab & "- The name of the script you are running." & vbCr &_
+				vbTab & "- Whether or not the script is ""erroring out"" for any other users." & vbCr &_
+				vbTab & "- The name and email for an employee from your IT department," & vbCr & _
+				vbTab & vbTab & "responsible for network issues." & vbCr &_
+				vbTab & "- The URL indicated below (a screenshot should suffice)." & vbCr &_
+				vbCr & _
+				"Veronica will work with your IT department to try and solve this issue, if needed." & vbCr &_ 
+				vbCr &_
+				"URL: " & url
+				script_end_procedure("Script ended due to error connecting to GitHub.")
+	END IF
+END FUNCTION
 
 function script_end_procedure(closing_message)
 	If closing_message <> "" then MsgBox closing_message
-	stop_time = timer
-	script_run_time = stop_time - start_time
-	'Getting user name
-	Set objNet = CreateObject("WScript.NetWork") 
-	user_ID = objNet.UserName
+	If collecting_statistics = True then
+		stop_time = timer
+		script_run_time = stop_time - start_time
+		'Getting user name
+		Set objNet = CreateObject("WScript.NetWork") 
+		user_ID = objNet.UserName
 
-	'Setting constants
-	Const adOpenStatic = 3
-	Const adLockOptimistic = 3
+		'Setting constants
+		Const adOpenStatic = 3
+		Const adLockOptimistic = 3
 
-	'Creating objects for Access
-	Set objConnection = CreateObject("ADODB.Connection")
-	Set objRecordSet = CreateObject("ADODB.Recordset")
+		'Creating objects for Access
+		Set objConnection = CreateObject("ADODB.Connection")
+		Set objRecordSet = CreateObject("ADODB.Recordset")
 
-	'Opening DB
-	objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = Q:\Blue Zone Scripts\Statistics\usage statistics.accdb"
+		'Opening DB
+		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = " & stats_database_path
 
-	'Opening usage_log and adding a record
-	objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
-	"VALUES ('" & user_ID & "', '" & date & "', '" & time & "', '" & name_of_script & "', " & script_run_time & ", '" & closing_message & "')", objConnection, adOpenStatic, adLockOptimistic
+		'Opening usage_log and adding a record
+		objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
+		"VALUES ('" & user_ID & "', '" & date & "', '" & time & "', '" & name_of_script & "', " & script_run_time & ", '" & closing_message & "')", objConnection, adOpenStatic, adLockOptimistic
+	End if
 	stopscript
 end function
 
 function script_end_procedure_wsh(closing_message) 'For use when running a script outside of the BlueZone Script Host
 	If closing_message <> "" then MsgBox closing_message
-	stop_time = timer
-	script_run_time = stop_time - start_time
-	'Getting user name
-	Set objNet = CreateObject("WScript.NetWork") 
-	user_ID = objNet.UserName
+	If collecting_statistics = True then
+		stop_time = timer
+		script_run_time = stop_time - start_time
+		'Getting user name
+		Set objNet = CreateObject("WScript.NetWork") 
+		user_ID = objNet.UserName
 
-	'Setting constants
-	Const adOpenStatic = 3
-	Const adLockOptimistic = 3
+		'Setting constants
+		Const adOpenStatic = 3
+		Const adLockOptimistic = 3
 
-	'Creating objects for Access
-	Set objConnection = CreateObject("ADODB.Connection")
-	Set objRecordSet = CreateObject("ADODB.Recordset")
+		'Creating objects for Access
+		Set objConnection = CreateObject("ADODB.Connection")
+		Set objRecordSet = CreateObject("ADODB.Recordset")
 
-	'Opening DB
-	objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = Q:\Blue Zone Scripts\Statistics\usage statistics.accdb"
+		'Opening DB
+		objConnection.Open "Provider = Microsoft.ACE.OLEDB.12.0; Data Source = " & stats_database_path
 
-	'Opening usage_log and adding a record
-	objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
-	"VALUES ('" & user_ID & "', '" & date & "', '" & time & "', '" & name_of_script & "', " & script_run_time & ", '" & closing_message & "')", objConnection, adOpenStatic, adLockOptimistic
+		'Opening usage_log and adding a record
+		objRecordSet.Open "INSERT INTO usage_log (USERNAME, SDATE, STIME, SCRIPT_NAME, SRUNTIME, CLOSING_MSGBOX)" &  _
+		"VALUES ('" & user_ID & "', '" & date & "', '" & time & "', '" & name_of_script & "', " & script_run_time & ", '" & closing_message & "')", objConnection, adOpenStatic, adLockOptimistic
+	End if
 	Wscript.Quit
 end function
-
-
 
 Function step_through_handling 'This function will introduce "warning screens" before each transmit, which is very helpful for testing new scripts
 	'To use this function, simply replace the "Execute text_from_the_other_script" line with:
@@ -362,7 +449,23 @@ function transmit
   EMWaitReady 0, 0
 end function
 
-Function write_editbox_in_PRISM_case_note(bullet, editbox, spaces_count)
+FUNCTION word_doc_open(doc_location, objWord, objDoc)
+	'Opens Word object
+	Set objWord = CreateObject("Word.Application")
+	objWord.Visible = True		'We want to see it
+	
+	'Opens the specific Word doc
+	set objDoc = objWord.Documents.Add(doc_location)
+END FUNCTION
+
+FUNCTION word_doc_update_field(field_name, variable_for_field, objDoc)
+	'Simply enters the Word document field based on these three criteria
+	objDoc.FormFields(field_name).Result = variable_for_field
+END FUNCTION
+
+Function write_bullet_and_variable_in_CAAD(bullet, variable)
+  spaces_count = 6	'Temporary just to make it work
+
   EMGetCursor row, col 
   EMReadScreen line_check, 2, 15, 2
   If ((row = 20 and col + (len(bullet)) >= 78) or row = 21) and line_check = "26" then 
@@ -374,26 +477,26 @@ Function write_editbox_in_PRISM_case_note(bullet, editbox, spaces_count)
     EMWaitReady 0, 0
     EMSetCursor 16, 4
   End if
-  variable_array = split(editbox, " ")
+  variable_array = split(variable, " ")
   EMSendKey "* " & bullet & ": "
-  For each editbox_word in variable_array 
+  For each variable_word in variable_array 
     EMGetCursor row, col 
     EMReadScreen line_check, 2, 15, 2
-    If ((row = 20 and col + (len(editbox_word)) >= 78) or row = 21) and line_check = "26" then 
+    If ((row = 20 and col + (len(variable_word)) >= 78) or row = 21) and line_check = "26" then 
       MsgBox "You've run out of room in this case note. The script will now stop."
       StopScript
     End if
-    If (row = 20 and col + (len(editbox_word)) >= 78) or (row = 16 and col = 4) or row = 21 then
+    If (row = 20 and col + (len(variable_word)) >= 78) or (row = 16 and col = 4) or row = 21 then
       EMSendKey "<PF8>"
       EMWaitReady 0, 0
       EMSetCursor 16, 4
     End if
     EMGetCursor row, col 
-    If (row < 20 and col + (len(editbox_word)) >= 78) then EMSendKey "<newline>" & space(spaces_count) 
+    If (row < 20 and col + (len(variable_word)) >= 78) then EMSendKey "<newline>" & space(spaces_count) 
 '    If (row = 16 and col = 4) then EMSendKey space(spaces_count)		'<<<REPLACED WITH BELOW IN ORDER TO TEST column issue
     If (col = 4) then EMSendKey space(spaces_count)
-    EMSendKey editbox_word & " "
-    If right(editbox_word, 1) = ";" then 
+    EMSendKey variable_word & " "
+    If right(variable_word, 1) = ";" then 
       EMSendKey "<backspace>" & "<backspace>" 
       EMGetCursor row, col 
       If row = 20 then
@@ -413,9 +516,9 @@ Function write_editbox_in_PRISM_case_note(bullet, editbox, spaces_count)
     EMWaitReady 0, 0
     EMSetCursor 16, 4
   End if
-End function
+End Function
 
-Function write_new_line_in_PRISM_case_note(x)
+Function write_variable_in_CAAD(variable)
   EMGetCursor row, col 
   EMReadScreen line_check, 2, 15, 2
   If ((row = 20 and col + (len(x)) >= 78) or row = 21) and line_check = "26" then 
@@ -427,7 +530,7 @@ Function write_new_line_in_PRISM_case_note(x)
     EMWaitReady 0, 0
     EMSetCursor 16, 4
   End if
-  EMSendKey x & "<newline>"
+  EMSendKey variable & "<newline>"
   EMGetCursor row, col 
   If (row = 20 and col + (len(x)) >= 78) or (row = 21) then
     EMSendKey "<PF8>"
@@ -436,4 +539,48 @@ Function write_new_line_in_PRISM_case_note(x)
   End if
 End function
 
+'-------------------------------------LOADING MAXIS FUNCTIONS BECAUSE THEY ARE MOSTLY SHARED
+'LOADING FUNCTIONS LIBRARY FROM GITHUB REPOSITORY===========================================================================
+FuncLib_URL = "https://raw.githubusercontent.com/MN-Script-Team/BZS-FuncLib/RELEASE/MASTER%20FUNCTIONS%20LIBRARY.vbs"
+SET req = CreateObject("Msxml2.XMLHttp.6.0")				'Creates an object to get a FuncLib_URL
+req.open "GET", FuncLib_URL, FALSE							'Attempts to open the FuncLib_URL
+req.send													'Sends request
+IF req.Status = 200 THEN									'200 means great success
+	Set fso = CreateObject("Scripting.FileSystemObject")	'Creates an FSO
+	Execute req.responseText								'Executes the script code
+ELSE														'Error message, tells user to try to reach github.com, otherwise instructs to contact Veronica with details (and stops script).
+	MsgBox 	"Something has gone wrong. The code stored on GitHub was not able to be reached." & vbCr &_ 
+			vbCr & _
+			"Before contacting Veronica Cary, please check to make sure you can load the main page at www.GitHub.com." & vbCr &_
+			vbCr & _
+			"If you can reach GitHub.com, but this script still does not work, ask an alpha user to contact Veronica Cary and provide the following information:" & vbCr &_
+			vbTab & "- The name of the script you are running." & vbCr &_
+			vbTab & "- Whether or not the script is ""erroring out"" for any other users." & vbCr &_
+			vbTab & "- The name and email for an employee from your IT department," & vbCr & _
+			vbTab & vbTab & "responsible for network issues." & vbCr &_
+			vbTab & "- The URL indicated below (a screenshot should suffice)." & vbCr &_
+			vbCr & _
+			"Veronica will work with your IT department to try and solve this issue, if needed." & vbCr &_ 
+			vbCr &_
+			"URL: " & FuncLib_URL
+			script_end_procedure("Script ended due to error connecting to GitHub.")
+END IF
+
+'----------------------------------------------------------------------------------------------------DEPRECIATED FUNCTIONS LEFT HERE FOR COMPATIBILITY PURPOSES
+function PRISM_check_function													'DEPRECIATED 03/10/2015
+	call check_for_PRISM(True)	'Defaults to True because that's how we always did it.
+END function
+
+Function write_editbox_in_PRISM_case_note(bullet, variable, spaces_count)		'DEPRECIATED 03/10/2015
+	call write_bullet_and_variable_in_CAAD(bullet, variable)
+End function
+
+Function write_new_line_in_PRISM_case_note(variable)							'DEPRECIATED 03/10/2015
+	call write_variable_in_CAAD(variable)
+End function
+
+FUNCTION write_value_and_transmit(input_value, PRISM_row, PRISM_col)
+	EMWriteScreen input_value, PRISM_row, PRISM_col
+	transmit
+END FUNCTION
 
