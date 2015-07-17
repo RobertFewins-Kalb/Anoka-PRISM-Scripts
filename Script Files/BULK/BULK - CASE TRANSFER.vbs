@@ -190,10 +190,13 @@ IF transfer_all_cases_check = 0 THEN
 					CAAS_office = right(left(worker_array(i, 0), 6), 3)
 					CAAS_team = left(right(worker_array(i, 0), 5), 3)
 					CAAS_position = right(worker_array(i, 0), 2)
-									
-					EMWriteScreen "M", 3, 29
-					EMWriteScreen left(worker_array(i, j), 10), 4, 8
+					
+					EMWriteScreen "D", 3, 29
+					EMwriteScreen left(worker_array(i, j), 10), 4, 8
 					EMWriteScreen right(worker_array(i, j), 2), 4, 19
+					transmit
+					
+					EMWriteScreen "M", 3, 29
 					EMWriteScreen CAAS_county, 9, 20
 					EMWriteScreen CAAS_office, 10, 20
 					EMWriteScreen CAAS_team, 11, 20
@@ -203,7 +206,10 @@ IF transfer_all_cases_check = 0 THEN
 						MsgBox "*** Developer Mode Enabled ***" & vbCr & vbCr & _
 							"Transferring Case " & worker_array(i, j) & " to " & worker_array(i, 1)				
 					ELSE
-						transmit
+						DO
+							transmit
+							EMReadScreen confirmation_message, 70, 24, 2
+						LOOP UNTIL InStr(confirmation_message, "modified successfully") <> 0
 					END IF
 				END IF
 			NEXT
@@ -398,11 +404,18 @@ ELSEIF transfer_all_cases_check = 1 THEN
 	FOR EACH PRISM_case_number IN all_cases_array
 		IF PRISM_case_number <> "" THEN 
 			EMSetCursor 3, 29
-			EMSendKey "M"
+			EMSendKey "D"
 			EMSendKey PRISM_case_number
+			transmit
+			
+			EMWriteScreen "M", 3, 29
+			EMSetCursor 9, 20
 			EMSendKey transfer_to_position_number
 			IF developer_mode = False THEN 
-				transmit
+				DO
+					transmit
+					EMReadScreen confirmation_message, 70, 24, 2
+				LOOP UNTIL InStr(confirmation_message, "modified successfully") <> 0
 			ELSEIF developer_mode = True THEN 
 				objExcel.Cells(excel_row, 2).Value = PRISM_case_number
 				excel_row = excel_row + 1
