@@ -109,5 +109,3 @@ transmit  'Saves the CAAD note
 
 script_end_procedure("")   'Stops the script
 
-
-
